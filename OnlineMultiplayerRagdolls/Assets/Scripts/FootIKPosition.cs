@@ -10,6 +10,8 @@ public class FootIKPosition : MonoBehaviour
     [SerializeField] float maxStableDistance;
     [SerializeField] float stepDistance;
 
+    Vector3 globalSnapPosition;
+
     LayerMask layerMask;
 
     public bool stable = false;

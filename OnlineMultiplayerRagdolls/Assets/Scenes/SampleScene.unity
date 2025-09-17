@@ -395,7 +395,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   thisCollider: {fileID: 111374478}
   colliderToIgnore:
-  - {fileID: 1680644054}
+  - {fileID: 1680644058}
+  characterController: {fileID: 1680644060}
 --- !u!136 &111374478
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -429,7 +430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 152132545}
   m_Layer: 0
-  m_Name: Orientation
+  m_Name: CamOrientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1889,6 +1890,7 @@ MonoBehaviour:
   - {fileID: 569843175}
   - {fileID: 755758763}
   - {fileID: 1065832104}
+  characterController: {fileID: 0}
 --- !u!1 &601210907
 GameObject:
   m_ObjectHideFlags: 0
@@ -1962,6 +1964,8 @@ GameObject:
   - component: {fileID: 727969592}
   - component: {fileID: 727969591}
   - component: {fileID: 727969590}
+  - component: {fileID: 727969593}
+  - component: {fileID: 727969594}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -2059,6 +2063,135 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 727969588}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &727969593
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 727969588}
+  serializedVersion: 4
+  m_Mass: 3
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!153 &727969594
+ConfigurableJoint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 727969588}
+  serializedVersion: 4
+  m_ConnectedBody: {fileID: 111374473}
+  m_ConnectedArticulationBody: {fileID: 0}
+  m_Anchor: {x: 0, y: 0.5000004, z: 0}
+  m_Axis: {x: 1, y: 0, z: 0}
+  m_AutoConfigureConnectedAnchor: 1
+  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
+  m_SecondaryAxis: {x: 0, y: 1, z: 0}
+  m_XMotion: 0
+  m_YMotion: 0
+  m_ZMotion: 0
+  m_AngularXMotion: 2
+  m_AngularYMotion: 2
+  m_AngularZMotion: 2
+  m_LinearLimitSpring:
+    spring: 0
+    damper: 0
+  m_LinearLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularXLimitSpring:
+    spring: 0
+    damper: 0
+  m_LowAngularXLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_HighAngularXLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularYZLimitSpring:
+    spring: 0
+    damper: 0
+  m_AngularYLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_AngularZLimit:
+    limit: 0
+    bounciness: 0
+    contactDistance: 0
+  m_TargetPosition: {x: 0, y: 0, z: 0}
+  m_TargetVelocity: {x: 0, y: 0, z: 0}
+  m_XDrive:
+    serializedVersion: 4
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+    useAcceleration: 0
+  m_YDrive:
+    serializedVersion: 4
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+    useAcceleration: 0
+  m_ZDrive:
+    serializedVersion: 4
+    positionSpring: 0
+    positionDamper: 0
+    maximumForce: 3.4028233e+38
+    useAcceleration: 0
+  m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_TargetAngularVelocity: {x: 0, y: 0, z: 0}
+  m_RotationDriveMode: 0
+  m_AngularXDrive:
+    serializedVersion: 4
+    positionSpring: 1000
+    positionDamper: 35
+    maximumForce: 3.4028233e+38
+    useAcceleration: 0
+  m_AngularYZDrive:
+    serializedVersion: 4
+    positionSpring: 1000
+    positionDamper: 35
+    maximumForce: 3.4028233e+38
+    useAcceleration: 0
+  m_SlerpDrive:
+    serializedVersion: 4
+    positionSpring: 200
+    positionDamper: 20
+    maximumForce: 3.4028233e+38
+    useAcceleration: 0
+  m_ProjectionMode: 0
+  m_ProjectionDistance: 0.1
+  m_ProjectionAngle: 180
+  m_ConfiguredInWorldSpace: 0
+  m_SwapBodies: 0
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 0.00001
 --- !u!4 &738959324 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -7003120246543485935, guid: d9cd8eb4a074cd84ab2686c58bcf21d9, type: 3}
@@ -2784,11 +2917,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   camPos: {fileID: 1237388018}
-  head: {fileID: 727969588}
+  headJoint: {fileID: 727969594}
   body: {fileID: 111374470}
   mainJoint: {fileID: 1680644051}
-  sensX: 120
-  sensY: 120
+  sensX: 0.8
+  sensY: 0.8
 --- !u!1 &1573626009
 GameObject:
   m_ObjectHideFlags: 0
@@ -2961,10 +3094,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 588589936}
-  mainJoint: {fileID: 588589934}
   maxSpeed: 3
-  sensX: 55
-  sensY: 55
+  Controller: {fileID: 0}
+  Player: {fileID: 0}
+  mainJoint: {fileID: 588589934}
+  Speed: 0
+  JumpForce: 0
+  Sensitivity: 0
+  Gravity: 9.81
+  currentSpeed: 0
 --- !u!4 &1606043252 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2691821872267580857, guid: d9cd8eb4a074cd84ab2686c58bcf21d9, type: 3}
@@ -3164,12 +3302,12 @@ GameObject:
   - component: {fileID: 1680644057}
   - component: {fileID: 1680644056}
   - component: {fileID: 1680644055}
-  - component: {fileID: 1680644054}
   - component: {fileID: 1680644053}
   - component: {fileID: 1680644052}
   - component: {fileID: 1680644051}
   - component: {fileID: 1680644058}
   - component: {fileID: 1680644059}
+  - component: {fileID: 1680644060}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -3252,16 +3390,16 @@ ConfigurableJoint:
   m_RotationDriveMode: 0
   m_AngularXDrive:
     serializedVersion: 4
-    positionSpring: 200
-    positionDamper: 10
+    positionSpring: 900
+    positionDamper: 35
     maximumForce: 3.4028233e+38
-    useAcceleration: 0
+    useAcceleration: 1
   m_AngularYZDrive:
     serializedVersion: 4
-    positionSpring: 200
-    positionDamper: 10
+    positionSpring: 900
+    positionDamper: 35
     maximumForce: 3.4028233e+38
-    useAcceleration: 0
+    useAcceleration: 1
   m_SlerpDrive:
     serializedVersion: 4
     positionSpring: 0
@@ -3319,31 +3457,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1680644052}
-  mainJoint: {fileID: 1680644051}
   maxSpeed: 3
-  sensX: 120
-  sensY: 120
---- !u!65 &1680644054
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1680644050}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1, y: 2, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  Controller: {fileID: 1680644060}
+  Player: {fileID: 1680644057}
+  mainJoint: {fileID: 1680644051}
+  Speed: 6
+  JumpForce: 10
+  Sensitivity: 10
+  Gravity: 9.81
+  currentSpeed: 6
 --- !u!23 &1680644055
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3449,9 +3571,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 961f0739c1143f142831a4d735e3e4b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thisCollider: {fileID: 1680644054}
+  thisCollider: {fileID: 1680644058}
   colliderToIgnore:
   - {fileID: 111374478}
+  characterController: {fileID: 0}
+--- !u!143 &1680644060
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1680644050}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Height: 1
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: -0.5, z: 0}
 --- !u!4 &1687025459 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4170888873650689968, guid: d9cd8eb4a074cd84ab2686c58bcf21d9, type: 3}

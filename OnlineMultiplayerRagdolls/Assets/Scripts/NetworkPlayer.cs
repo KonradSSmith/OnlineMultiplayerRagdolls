@@ -1,5 +1,6 @@
 using NUnit.Framework.Interfaces;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class NetworkPlayer : MonoBehaviour
 {
@@ -8,25 +9,19 @@ public class NetworkPlayer : MonoBehaviour
     Vector2 moveInputVector = Vector2.zero;
     bool isJumpButtonPressed = false;
 
-    [SerializeField] float maxSpeed = 3;
-
-    private Vector3 Velocity;
     private Vector3 PlayerMovementInput;
-    private float xRotation;
+
 
     [Header("Components Needed")]
-    [SerializeField] private CharacterController Controller;
-    [SerializeField] private Transform Player;
     [SerializeField] ConfigurableJoint mainJoint;
     [Space]
     [Header("Movement")]
     [SerializeField] private float Speed;
     [SerializeField] private float JumpForce;
-    [SerializeField] private float Sensitivity;
-    [SerializeField] private float Gravity = 9.81f;
+    [SerializeField] private float groundDrag;
 
-    [Tooltip("The current speed I should be moving at")]
-    public float currentSpeed;
+    bool grounded = false;
+    public LayerMask groundLayer;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -40,40 +35,36 @@ public class NetworkPlayer : MonoBehaviour
     {
 
         PlayerMovementInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-        
+        grounded = Physics.Raycast(transform.position, Vector3.down, 1, groundLayer);
 
-        //MovePlayer();
-
+        if (grounded)
+        {
+            rb.linearDamping = groundDrag;
+        }
+        else
+        {
+            rb.linearDamping = 0;
+        }
     }
 
 
     private void FixedUpdate()
     {
-        //Vector3 forwardVel = transform.forward * currentSpeed * PlayerMovementInput.z;
-        //Vector3 horizontalVel = transform.right * currentSpeed * PlayerMovementInput.x;
-        Vector3 forwardVel = new Vector3(transform.forward.x, 0, transform.forward.z) * currentSpeed * PlayerMovementInput.z;
-        Vector3 horizontalVel = new Vector3(transform.right.x, 0, transform.right.z) * currentSpeed * PlayerMovementInput.x;
 
-        rb.linearVelocity = horizontalVel + forwardVel + new Vector3(0, rb.linearVelocity.y, 0);
+        MovePlayer();
+
     }
 
     private void MovePlayer()
     {
-        Vector3 MoveVector = transform.TransformDirection(PlayerMovementInput);
-
-        if (Controller.isGrounded)
-        {
-            Velocity.y = -1f;
-
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Velocity.y = JumpForce;
-            }
-        }
-
-        Controller.Move(Velocity * Time.deltaTime);
-
+        Vector3 moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z) * PlayerMovementInput.z + new Vector3(transform.right.x, 0, transform.right.z) * PlayerMovementInput.x;
+    
+        rb.AddForce(moveDirection.normalized * Speed * 10f, ForceMode.Force);
     }
 
+    //private float SpeedControl()
+    //{
+    //    Vector3 flatVel = new Vector3
+    //}
 
 }

@@ -3,49 +3,47 @@ using UnityEngine.Experimental.Rendering;
 
 public class PlayerCam : MonoBehaviour
 {
+    #region
+    [Header("Dependencies")]
     [SerializeField] GameObject camPos;
     [SerializeField] ConfigurableJoint headJoint;
-    [SerializeField] GameObject body;
     [SerializeField] ConfigurableJoint mainJoint;
 
-    [SerializeField] float sensX;
-    [SerializeField] float sensY;
-    float xRotation;
-    float yRotation;
-    Vector2 lookInputVector = Vector2.zero;
+    [Header("Camera Configurations")]
+    [SerializeField] float sens;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    Vector2 lookVector = Vector2.zero;
+    #endregion
+
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        float mouseX = Input.GetAxisRaw("Mouse X") * sensX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * sensY;
-        yRotation -= mouseX;
-        xRotation -= mouseY;
-        lookInputVector = new Vector2 (xRotation, yRotation);
-        xRotation = Mathf.Clamp(xRotation, -90, 90);
+        GetInput();
+        RotateBodyAndCam();
+    }
 
+    private void RotateBodyAndCam()
+    {
+        Vector3 targetBodyRotation = new Vector3(0, lookVector.y, 0);
+        Vector3 targetHeadRotation = new Vector3(headJoint.targetRotation.x - lookVector.x, 0, 0);
 
-        mainJoint.targetRotation = Quaternion.Euler(0, headJoint.targetRotation.y + yRotation, 0);
-        headJoint.targetRotation = Quaternion.Euler(headJoint.targetRotation.x - xRotation, 0, 0);
+        mainJoint.targetRotation = Quaternion.Euler(targetBodyRotation);
+        headJoint.targetRotation = Quaternion.Euler(targetHeadRotation);
+
         Camera.main.transform.position = camPos.transform.position;
         Camera.main.transform.rotation = camPos.transform.rotation;
+    }
 
-        //if(lookInputVector.magnitude != 0)
-        //{
-            //Quaternion desiredDirection = Quaternion.LookRotation(new Vector3(xRotation, 0, yRotation), transform.up);
+    private void GetInput()
+    {
+        Vector2 mouseXY = new Vector2(Input.GetAxisRaw("Mouse Y") * sens, Input.GetAxisRaw("Mouse X") * sens);
 
-            //mainJoint.targetRotation = Quaternion.RotateTowards(mainJoint.targetRotation, desiredDirection, Time.fixedDeltaTime * 300);
-        //}
-
-        //mainJoint.transform.rotation = Quaternion.Euler(0, yRotation, 0);
-
-
+        lookVector -= mouseXY;
+        lookVector.x = Mathf.Clamp(lookVector.x, -90, 90);
     }
 }

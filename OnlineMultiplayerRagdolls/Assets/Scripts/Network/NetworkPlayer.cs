@@ -1,4 +1,5 @@
 using Fusion;
+using Fusion.Addons.Physics;
 using System.Collections;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     #region
     [Header("Dependencies")]
     [SerializeField] Rigidbody rb;
+    [SerializeField] NetworkRigidbody3D rb3D;
     [SerializeField] ConfigurableJoint mainJoint;
     [Space]
     [Header("Movement")]
@@ -34,6 +36,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     {
         if (Object.HasStateAuthority)
         {
+            CheckAndRespawn();
             GroundCheck();
         }
 
@@ -44,6 +47,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
             MovePlayer();
             SpeedControl();
         }
+
     }
 
     public NetworkInputData GetNetworkInput()
@@ -162,6 +166,14 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         }
 
         transform.name = $"P_{Object.Id}";
+    }
+
+    private void CheckAndRespawn()
+    {
+        if (rb3D.transform.position.y < -10)
+        {
+            rb3D.Teleport(new Vector3(0, 3, 0), Quaternion.identity);
+        }
     }
 
     public void PlayerLeft(PlayerRef player)

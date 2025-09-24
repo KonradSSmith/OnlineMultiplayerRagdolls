@@ -67,7 +67,7 @@ public class Spawner : SimulationBehaviour, INetworkRunnerCallbacks
         {
             Utils.DebugLog("OnPlayerJoined this is the server/host, spawning network player");
 
-            runner.Spawn(networkPlayerPrefab.gameObject, new Vector3(2f, 3f, 0f), Quaternion.identity, player);
+            runner.Spawn(networkPlayerPrefab.gameObject, new Vector3(0f, 3f, 0f), Quaternion.identity, player);
         }
         else
         {

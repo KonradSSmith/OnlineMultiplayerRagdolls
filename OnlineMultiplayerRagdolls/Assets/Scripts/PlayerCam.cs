@@ -1,10 +1,11 @@
+using Fusion;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
-public class PlayerCam : MonoBehaviour
+public class PlayerCam : NetworkBehaviour, IPlayerLeft
 {
     #region
-    [Header("Dependencies")]
+    [Header("Camera Dependencies")]
     [SerializeField] GameObject camPos;
     [SerializeField] ConfigurableJoint headJoint;
     [SerializeField] ConfigurableJoint mainJoint;
@@ -21,7 +22,7 @@ public class PlayerCam : MonoBehaviour
         Cursor.visible = false;
     }
 
-    void Update()
+    public override void FixedUpdateNetwork()
     {
         GetInput();
         RotateBodyAndCam();
@@ -45,5 +46,10 @@ public class PlayerCam : MonoBehaviour
 
         lookVector -= mouseXY;
         lookVector.x = Mathf.Clamp(lookVector.x, -90, 90);
+    }
+
+    public void PlayerLeft(PlayerRef player)
+    {
+
     }
 }

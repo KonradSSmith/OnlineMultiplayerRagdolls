@@ -40,7 +40,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4751139648167675225}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 40a33281587dbeb4aa53b60dacb0fdaf, type: 3}
   m_Name: 
@@ -307,7 +307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &629004331471619716
 Transform:
   m_ObjectHideFlags: 0
@@ -805,6 +805,10 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  camPos: {fileID: 9145260013941972337}
+  cam: {fileID: 5294716640837695687}
+  headJoint: {fileID: 6070690290183045519}
+  sens: 2
 --- !u!54 &5129771509037119637
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -992,6 +996,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 4767381602214440217}
   - {fileID: 4119102542416237348}
+  - {fileID: 3591300943182346262}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &4119102542416237348
 MonoBehaviour:

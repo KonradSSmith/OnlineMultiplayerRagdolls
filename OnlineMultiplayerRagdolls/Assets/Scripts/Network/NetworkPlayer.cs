@@ -2,6 +2,7 @@ using Fusion;
 using Fusion.Addons.Physics;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 {
@@ -23,6 +24,17 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     [SerializeField] private float extraGravity;
     [Space]
     [SerializeField] LayerMask groundLayer;
+    [Space]
+    [Header("Camera Dependencies")]
+    [SerializeField] GameObject camPos;
+    [SerializeField] Camera cam;
+    [SerializeField] ConfigurableJoint headJoint;
+
+    [Header("Camera Configurations")]
+    [SerializeField] float sens;
+
+    Vector2 lookVector = Vector2.zero;
+
 
     bool grounded = false;
     Vector2 moveInputVector = Vector2.zero;
@@ -30,7 +42,16 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     bool readyToJump = true;
     private NetworkInputData networkInputData;
     private Vector2 PlayerMovementInput;
+    Vector3 flatVel = Vector3.zero;
+    Vector3 limitedVel = Vector3 .zero;
+    Vector3 moveDirection;
     #endregion
+
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
 
     public override void FixedUpdateNetwork()
     {
@@ -46,6 +67,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
             GetInput();
             MovePlayer();
             SpeedControl();
+            RotateBodyAndCam();
         }
 
     }
@@ -56,6 +78,9 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
         //movement data
         networkInputData.movementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        //camera data
+        networkInputData.cameraDir = new Vector2(Input.GetAxisRaw("Mouse Y") * sens, Input.GetAxisRaw("Mouse X") * sens);
 
         if (Input.GetKey(KeyCode.Space))
         {
@@ -68,70 +93,84 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
         return networkInputData;
     }
+    private void RotateBodyAndCam()
+    {
+        lookVector -= networkInputData.cameraDir;
+        lookVector.x = Mathf.Clamp(lookVector.x, -90, 90);
+
+        Vector3 targetBodyRotation = new Vector3(0, lookVector.y, 0);
+        Vector3 targetHeadRotation = new Vector3(headJoint.targetRotation.x - lookVector.x, 0, 0);
+
+        mainJoint.targetRotation = Quaternion.Euler(targetBodyRotation);
+        headJoint.targetRotation = Quaternion.Euler(targetHeadRotation);
+
+        Camera.main.transform.position = camPos.transform.position;
+        Camera.main.transform.rotation = camPos.transform.rotation;
+    }
 
     private void GetInput()
     {
-        PlayerMovementInput = networkInputData.movementInput;
+        Local.PlayerMovementInput = Local.networkInputData.movementInput;
 
-        if (networkInputData.isJumpPressed && readyToJump && grounded)
+        if (Local.networkInputData.isJumpPressed && Local.readyToJump && Local.grounded)
         {
-            readyToJump = false;
+            Local.readyToJump = false;
 
-            Jump();
+            Local.Jump();
 
-            StartCoroutine(ResetJump());
+            Local.StartCoroutine(ResetJump());
         }
       
     }
 
     private void GroundCheck()
     {
-        grounded = Physics.SphereCast(new Ray(mainJoint.transform.position, Vector3.down), 0.8f, 0.4f, groundLayer);
+        Local.grounded = Physics.SphereCast(new Ray(Local.mainJoint.transform.position, Vector3.down), 0.8f, 0.4f, Local.groundLayer);
 
-        if (grounded)
+        if (Local.grounded)
         {
-            rb.linearDamping = groundDrag;
+            Local.rb.linearDamping = Local.groundDrag;
         }
         else
         {
-            rb.linearDamping = airDrag;
-            rb.AddForce(new Vector3(0, -extraGravity, 0), ForceMode.Impulse);
+            Local.rb.linearDamping = Local.airDrag;
+            Local.rb.AddForce(new Vector3(0, -Local.extraGravity, 0), ForceMode.Impulse);
         }
     }
 
     private void MovePlayer()
     {
-        Vector3 moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z) * PlayerMovementInput.y + new Vector3(transform.right.x, 0, transform.right.z) * PlayerMovementInput.x;
-    
-        if (grounded)
+        Local.moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z) * PlayerMovementInput.y + new Vector3(transform.right.x, 0, transform.right.z) * PlayerMovementInput.x;
+
+        if (Local.grounded)
         {
-            rb.AddForce(moveDirection.normalized * groundMoveSpeed * 10f, ForceMode.Force);
+            Local.rb.AddForce(Local.moveDirection.normalized * Local.groundMoveSpeed * 10f, ForceMode.Force);
         }
         else
         {
-            rb.AddForce(moveDirection.normalized * airMoveSpeed * 10f, ForceMode.Force);
+            Local.rb.AddForce(Local.moveDirection.normalized * Local.airMoveSpeed * 10f, ForceMode.Force);
         }
 
     }
 
     private void SpeedControl()
     {
-        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        Local.flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
-        if (grounded)
+        if (Local.grounded)
         {
-            if (flatVel.magnitude > groundMoveSpeed)
+            if (Local.flatVel.magnitude > Local.groundMoveSpeed)
             {
-                Vector3 limitedVel = flatVel.normalized * groundMoveSpeed;
-                rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+                Local.limitedVel = Local.flatVel.normalized * Local.groundMoveSpeed;
+                Local.rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
             }
         }
         else
         {
-            if (flatVel.magnitude > airMoveSpeed)
+            if (Local.flatVel.magnitude > Local.airMoveSpeed)
             {
-                Vector3 limitedVel = flatVel.normalized * airMoveSpeed;
-                rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+                Local.limitedVel = Local.flatVel.normalized * Local.airMoveSpeed;
+                Local.rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
             }
         }
     }
@@ -139,17 +178,16 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     private void Jump()
     {
         //reset y velocity
-        rb.angularVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        Local.rb.angularVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
-        rb.AddForce(transform.up * JumpForce, ForceMode.Impulse);
+        Local.rb.AddForce(transform.up * JumpForce, ForceMode.Impulse);
 
     }
 
     IEnumerator ResetJump()
     {
-        //35 minutes into tutorial
         yield return new WaitForSeconds(jumpCooldown);
-        readyToJump = true;
+        Local.readyToJump = true;
     }
 
     public override void Spawned()
@@ -157,12 +195,13 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         if (Object.HasInputAuthority)
         {
             Local = this;
-
+            cam.gameObject.SetActive(true);
             Utils.DebugLog("Spawned player with input authority");
         }
         else
         {
             Utils.DebugLog("Spawned player without input authority");
+            cam.gameObject.SetActive(false);
         }
 
         transform.name = $"P_{Object.Id}";
@@ -170,9 +209,9 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     private void CheckAndRespawn()
     {
-        if (rb3D.transform.position.y < -10)
+        if (Local.rb3D.transform.position.y < -10)
         {
-            rb3D.Teleport(new Vector3(0, 3, 0), Quaternion.identity);
+            Local.rb3D.Teleport(new Vector3(0, 3, 0), Quaternion.identity);
         }
     }
 

@@ -24,33 +24,52 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     bool grounded = false;
     Vector2 moveInputVector = Vector2.zero;
+    bool jumpButtonPressed = false;
     bool readyToJump = true;
-    private Vector3 PlayerMovementInput;
+    private NetworkInputData networkInputData;
+    private Vector2 PlayerMovementInput;
     #endregion
 
-    private void Awake()
+    public override void FixedUpdateNetwork()
     {
-        
+        if (Object.HasStateAuthority)
+        {
+            GroundCheck();
+        }
+
+        //only executed if we have input authority or we are the state authority
+        if (GetInput(out networkInputData))
+        {
+            GetInput();
+            MovePlayer();
+            SpeedControl();
+        }
     }
 
-    void Update()
+    public NetworkInputData GetNetworkInput()
     {
-        GetInput();
-        
-        GroundCheck();
-        SpeedControl();
-    }
+        NetworkInputData networkInputData = new NetworkInputData();
 
-    private void FixedUpdate()
-    {
-        MovePlayer();
+        //movement data
+        networkInputData.movementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            //jumpButtonPressed = true;
+            networkInputData.isJumpPressed = true;
+        }
+
+        //reset jump button
+        //jumpButtonPressed = false;
+
+        return networkInputData;
     }
 
     private void GetInput()
     {
-        PlayerMovementInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
+        PlayerMovementInput = networkInputData.movementInput;
 
-        if(Input.GetKeyDown(KeyCode.Space) && readyToJump && grounded)
+        if (networkInputData.isJumpPressed && readyToJump && grounded)
         {
             readyToJump = false;
 
@@ -58,6 +77,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
             StartCoroutine(ResetJump());
         }
+      
     }
 
     private void GroundCheck()
@@ -71,12 +91,13 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         else
         {
             rb.linearDamping = airDrag;
+            rb.AddForce(new Vector3(0, -extraGravity, 0), ForceMode.Impulse);
         }
     }
 
     private void MovePlayer()
     {
-        Vector3 moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z) * PlayerMovementInput.z + new Vector3(transform.right.x, 0, transform.right.z) * PlayerMovementInput.x;
+        Vector3 moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z) * PlayerMovementInput.y + new Vector3(transform.right.x, 0, transform.right.z) * PlayerMovementInput.x;
     
         if (grounded)
         {
@@ -85,7 +106,6 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         else
         {
             rb.AddForce(moveDirection.normalized * airMoveSpeed * 10f, ForceMode.Force);
-            rb.AddForce(new Vector3(0, -extraGravity, 0), ForceMode.Impulse);
         }
 
     }
@@ -123,6 +143,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     IEnumerator ResetJump()
     {
+        //35 minutes into tutorial
         yield return new WaitForSeconds(jumpCooldown);
         readyToJump = true;
     }
@@ -133,7 +154,14 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         {
             Local = this;
 
+            Utils.DebugLog("Spawned player with input authority");
         }
+        else
+        {
+            Utils.DebugLog("Spawned player without input authority");
+        }
+
+        transform.name = $"P_{Object.Id}";
     }
 
     public void PlayerLeft(PlayerRef player)

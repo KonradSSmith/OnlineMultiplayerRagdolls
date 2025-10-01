@@ -42,7 +42,7 @@ public class Spawner : SimulationBehaviour, INetworkRunnerCallbacks
     {
         if (NetworkPlayer.Local != null)
         {
-            input.Set(NetworkPlayer.Local.GetNetworkInput());
+            input.Set(NetworkPlayer.Local.SendNetworkInput());
         }
     }
 

@@ -795,10 +795,10 @@ MonoBehaviour:
   rb: {fileID: 5129771509037119637}
   rb3D: {fileID: 4119102542416237348}
   mainJoint: {fileID: 5435477508217903033}
-  groundMoveSpeed: 10
-  airMoveSpeed: 10
+  groundMoveSpeed: 11
+  airMoveSpeed: 11
   JumpForce: 25
-  groundDrag: 7
+  groundDrag: 4
   airDrag: 4
   jumpCooldown: 0.25
   extraGravity: 1

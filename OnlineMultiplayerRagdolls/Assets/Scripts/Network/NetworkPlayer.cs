@@ -55,37 +55,52 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     public override void FixedUpdateNetwork()
     {
-        if (Object.HasStateAuthority)
-        {
-            CheckAndRespawn();
-            GroundCheck();
-        }
-
-        //only executed if we have input authority or we are the state authority
-        if (GetInput(out networkInputData))
-        {
-            GetInput();
-            MovePlayer();
-            SpeedControl();
-            RotateBodyAndCam();
-        }
 
     }
 
-    public NetworkInputData GetNetworkInput()
+    private void FixedUpdate()
+    {
+        if (Object.HasInputAuthority)
+        {
+            MovePlayer();
+            GroundCheck();
+        }
+    }
+
+    private void Update()
+    {
+        //only executed if we have input authority or we are the state authority
+        if (Object.HasInputAuthority)
+        {
+            //CheckAndRespawn();
+            GetInput();
+            RotateBodyAndCam();
+            SpeedControl();
+        }
+    }
+
+    private void moveWithoutInputAuthority()
+    {
+        mainJoint.targetPosition = networkInputData.networkBasePosition;
+    }
+
+    public NetworkInputData SendNetworkInput()
     {
         NetworkInputData networkInputData = new NetworkInputData();
 
         //movement data
-        networkInputData.movementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        //networkInputData.movementInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        networkInputData.networkBasePosition = transform.position;
 
         //camera data
-        networkInputData.cameraDir = new Vector2(Input.GetAxisRaw("Mouse Y") * sens, Input.GetAxisRaw("Mouse X") * sens);
+        //networkInputData.cameraDir = new Vector2(Input.GetAxisRaw("Mouse Y") * sens, Input.GetAxisRaw("Mouse X") * sens);
+        networkInputData.networkCamPos = camPos.transform.position;
+        networkInputData.networkCamRot = camPos.transform.rotation;
 
         if (Input.GetKey(KeyCode.Space))
         {
             //jumpButtonPressed = true;
-            networkInputData.isJumpPressed = true;
+            //networkInputData.isJumpPressed = true;
         }
 
         //reset jump button
@@ -95,32 +110,34 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     }
     private void RotateBodyAndCam()
     {
-        lookVector -= networkInputData.cameraDir;
+        Vector2 mouseXY = new Vector2(Input.GetAxisRaw("Mouse Y") * sens, Input.GetAxisRaw("Mouse X") * sens);
+
+        lookVector -= mouseXY;
         lookVector.x = Mathf.Clamp(lookVector.x, -90, 90);
 
         Vector3 targetBodyRotation = new Vector3(0, lookVector.y, 0);
-        Vector3 targetHeadRotation = new Vector3(headJoint.targetRotation.x - lookVector.x, 0, 0);
+        Vector3 targetHeadRotation = new Vector3(Local.headJoint.targetRotation.x - lookVector.x, 0, 0);
 
-        mainJoint.targetRotation = Quaternion.Euler(targetBodyRotation);
-        headJoint.targetRotation = Quaternion.Euler(targetHeadRotation);
+        Local.mainJoint.targetRotation = Quaternion.Euler(targetBodyRotation);
+        Local.headJoint.targetRotation = Quaternion.Euler(targetHeadRotation);
 
-        Camera.main.transform.position = camPos.transform.position;
-        Camera.main.transform.rotation = camPos.transform.rotation;
+        Camera.main.transform.position = Local.camPos.transform.position;
+        Camera.main.transform.rotation = Local.camPos.transform.rotation;
     }
 
     private void GetInput()
     {
-        Local.PlayerMovementInput = Local.networkInputData.movementInput;
+        Local.PlayerMovementInput = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-        if (Local.networkInputData.isJumpPressed && Local.readyToJump && Local.grounded)
+        if (Input.GetKeyDown(KeyCode.Space) && readyToJump && grounded)
         {
             Local.readyToJump = false;
 
-            Local.Jump();
+            Jump();
 
-            Local.StartCoroutine(ResetJump());
+            StartCoroutine(ResetJump());
         }
-      
+
     }
 
     private void GroundCheck()
@@ -140,7 +157,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     private void MovePlayer()
     {
-        Local.moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z) * PlayerMovementInput.y + new Vector3(transform.right.x, 0, transform.right.z) * PlayerMovementInput.x;
+        Local.moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z) * Local.PlayerMovementInput.y + new Vector3(transform.right.x, 0, transform.right.z) * Local.PlayerMovementInput.x;
 
         if (Local.grounded)
         {
@@ -155,7 +172,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     private void SpeedControl()
     {
-        Local.flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        Local.flatVel = new Vector3(Local.rb.linearVelocity.x, 0f, Local.rb.linearVelocity.z);
 
         if (Local.grounded)
         {

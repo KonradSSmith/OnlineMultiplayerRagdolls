@@ -3,7 +3,8 @@ using UnityEngine;
 
 public struct NetworkInputData : INetworkInput
 {
-    public Vector2Compressed movementInput;
-    public Vector2Compressed cameraDir;
-    public NetworkBool isJumpPressed;
+    public Vector3Compressed networkBasePosition;
+    public Vector3Compressed networkCamPos;
+    public QuaternionCompressed networkCamRot;
+    //public NetworkBool isJumpPressed;
 }

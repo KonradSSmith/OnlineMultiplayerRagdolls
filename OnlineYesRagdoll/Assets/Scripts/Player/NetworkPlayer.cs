@@ -37,6 +37,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     Vector2 mouseXY = Vector2.zero;
 
     [Networked] private NetworkButtons PreviousButtons { get; set; }
+    [Networked, Capacity(10)] public NetworkArray<Quaternion> networkPhysicsSyncedRotations { get; set; }
 
     bool grounded = false;
 

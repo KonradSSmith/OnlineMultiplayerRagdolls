@@ -38,6 +38,8 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     [Networked] private NetworkButtons PreviousButtons { get; set; }
 
+    [Networked, Capacity(10)] public NetworkArray<Quaternion> networkPhysicsSyncedRotations { get; }
+
     bool grounded = false;
 
     bool readyToJump = true;
@@ -56,7 +58,13 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
             GroundCheck();
             MovePlayer();
             SpeedControl();
+            SyncPlayers();
         }
+    }
+
+    public void SyncPlayers()
+    {
+        //for (int i = 0; i < )
     }
 
     public override void Render()

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4622224454603591418}
   - component: {fileID: -2387704481589391108}
   - component: {fileID: -6734081916061462202}
+  - component: {fileID: 1324622991024424867}
   m_Layer: 0
   m_Name: Runner
   m_TagString: Untagged
@@ -57,4 +58,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46b2940a8aa30f1448d527f249303d25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LocalPlayer: {fileID: 0}
+--- !u!114 &1324622991024424867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809565504301785677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b5a1ff9dee264bfd829a39e6542dcbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _physicsAuthority: 2
+  _physicsTiming: 3
+  ClientPhysicsSimulation: 1
+  DeltaTimeMultiplier: 1
+  SetUnityFixedTimestep: 0

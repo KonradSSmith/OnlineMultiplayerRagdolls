@@ -38,11 +38,10 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     [Networked] private NetworkButtons PreviousButtons { get; set; }
 
-    [Networked, Capacity(10)] public NetworkArray<Quaternion> networkPhysicsSyncedRotations { get; }
+    InputManager inputManager;
 
     bool grounded = false;
 
-    bool readyToJump = true;
     Vector3 flatVel = Vector3.zero;
     Vector3 limitedVel = Vector3 .zero;
     Vector3 moveDirection;
@@ -54,17 +53,11 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         if (GetInput(out NetInput input))
         {
             GetPlayerInput(input);
-            RotateBodyAndCamTarget();
+            //RotateBodyAndCamTarget();
             GroundCheck();
             MovePlayer();
             SpeedControl();
-            SyncPlayers();
         }
-    }
-
-    public void SyncPlayers()
-    {
-        //for (int i = 0; i < )
     }
 
     public override void Render()
@@ -75,10 +68,12 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     private void RotateBodyAndCamTarget()
     {
         lookVector -= mouseXY;
+        //lookVector = lookVector -= inputManager.AccumulatedMouseDelta * sens;
         lookVector.x = Mathf.Clamp(lookVector.x, -90, 90);
 
         Vector3 targetBodyRotation = new Vector3(0, lookVector.y, 0);
-        Vector3 targetHeadRotation = new Vector3(headJoint.targetRotation.x - lookVector.x, 0, 0);
+        Vector3 targetHeadRotation = new Vector3(lookVector.x, 0, 0);
+        //Vector3 targetHeadRotation = new Vector3(headJoint.targetRotation.x - lookVector.x, 0, 0);
 
         mainJoint.targetRotation = Quaternion.Euler(targetBodyRotation);
         headJoint.targetRotation = Quaternion.Euler(targetHeadRotation);
@@ -87,16 +82,10 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     private void GetPlayerInput(NetInput input)
     {
         moveDirection = (rb.transform.rotation * new Vector3(input.Direction.x, 0f, input.Direction.y)).normalized;
-        mouseXY = new Vector2(-input.LookDelta.x * sens, input.LookDelta.y * sens);
+        mouseXY = new Vector2(input.LookDelta.x * sens, input.LookDelta.y * sens);
 
         if (input.Buttons.WasPressed(PreviousButtons, InputButton.Jump) && grounded)
-        {
-           readyToJump = false;
-
            Jump();
-
-           StartCoroutine(ResetJump());
-        }
 
         PreviousButtons = input.Buttons;
     }
@@ -107,6 +96,7 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
         if (grounded)
         {
+            Debug.Log("grounded");
             rb.drag = groundDrag;
         }
         else
@@ -159,16 +149,12 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 
     }
 
-    IEnumerator ResetJump()
-    {
-        yield return new WaitForSeconds(jumpCooldown);
-        readyToJump = true;
-    }
-
     public override void Spawned()
     {
         if (HasInputAuthority)
         {
+            inputManager = Runner.GetComponent<InputManager>();
+            inputManager.LocalPlayer = this;
             cam.gameObject.SetActive(true);
 
             if (cam.gameObject != Camera.main.gameObject)

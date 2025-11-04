@@ -1,5 +1,6 @@
 using Fusion;
 using Fusion.Menu;
+using Fusion.Addons.KCC;
 using Fusion.Sockets;
 using MultiClimb.Menu;
 using System;
@@ -9,7 +10,11 @@ using UnityEngine.InputSystem;
 
 public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCallbacks
 {
+    public NetworkPlayer LocalPlayer;
+    public Vector2 AccumulatedMouseDelta => mouseDeltaAccumulator.AccumulatedValue;
+
     private NetInput accumulatedInput;
+    private Vector2Accumulator mouseDeltaAccumulator = new() { SmoothingWindow = 0.025f };
     private bool resetInput;
 
     void IBeforeUpdate.BeforeUpdate()
@@ -46,7 +51,7 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
         {
             Vector2 mouseDelta = mouse.delta.ReadValue();
             Vector2 lookRotationDelta = new(-mouseDelta.y, mouseDelta.x);
-            accumulatedInput.LookDelta += lookRotationDelta;
+            mouseDeltaAccumulator.Accumulate(lookRotationDelta);
         }
 
         if (keyboard != null)
@@ -84,11 +89,9 @@ public class InputManager : SimulationBehaviour, IBeforeUpdate, INetworkRunnerCa
     void INetworkRunnerCallbacks.OnInput(NetworkRunner runner, NetworkInput input)
     {
         accumulatedInput.Direction.Normalize();
+        accumulatedInput.LookDelta = mouseDeltaAccumulator.ConsumeTickAligned(runner);
         input.Set(accumulatedInput);
         resetInput = true;
-
-        // We have to reset the look delta immediately because we don't want mouse input being reused if another tick is executed during this same frame
-        accumulatedInput.LookDelta = default;
     }
 
     void INetworkRunnerCallbacks.OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }

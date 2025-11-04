@@ -46,6 +46,8 @@ GameObject:
   - component: {fileID: 4834087731008447306}
   - component: {fileID: 2109486881282416757}
   - component: {fileID: 6070690290183045519}
+  - component: {fileID: 8696304197353343099}
+  - component: {fileID: 7742608893378308917}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -269,6 +271,46 @@ ConfigurableJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 0.00001
+--- !u!114 &8696304197353343099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5388513805871462301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3711843071
+  ObjectInterest: 1
+  Flags: 1
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 7742608893378308917}
+--- !u!114 &7742608893378308917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5388513805871462301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a591d221a634417e9827eb58e17de84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncScale: 0
+  SyncParent: 1
+  _interpolationTarget: {fileID: 0}
+  UsePreciseRotation: 0
+  UseRenderSleepThresholds: 1
+  RenderThresholds:
+    UseEnergy: 1
+    Position: 0.01
+    Rotation: 0.01
+    Scale: 0.01
 --- !u!1 &6095409047836520724
 GameObject:
   m_ObjectHideFlags: 0
@@ -979,7 +1021,8 @@ MonoBehaviour:
   SortKey: 233359043
   ObjectInterest: 1
   Flags: 262145
-  NestedObjects: []
+  NestedObjects:
+  - {fileID: 8696304197353343099}
   NetworkedBehaviours:
   - {fileID: 4767381602214440217}
   - {fileID: 4119102542416237348}

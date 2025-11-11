@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2966464340249275849
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 55986997338208231}
+  - component: {fileID: 8178821597304899782}
+  m_Layer: 6
+  m_Name: hitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &55986997338208231
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2966464340249275849}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1.566}
+  m_LocalScale: {x: 1, y: 1, z: 1.3486037}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4400034026870108256}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &8178821597304899782
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2966464340249275849}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4751139648167675225
 GameObject:
   m_ObjectHideFlags: 0
@@ -9,7 +62,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2117304935555809204}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CameraHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,7 +101,7 @@ GameObject:
   - component: {fileID: 6070690290183045519}
   - component: {fileID: 8696304197353343099}
   - component: {fileID: 7742608893378308917}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -285,7 +338,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 3711843071
   ObjectInterest: 1
-  Flags: 1
+  Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7742608893378308917}
@@ -324,7 +377,7 @@ GameObject:
   - component: {fileID: 5872704174121879056}
   - component: {fileID: 4288156180882532274}
   - component: {fileID: 2569298068543057050}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -476,9 +529,9 @@ GameObject:
   - component: {fileID: 7592801174445367472}
   - component: {fileID: 1049645720009973484}
   - component: {fileID: 8603261382463615183}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Capsule
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -735,7 +788,7 @@ GameObject:
   - component: {fileID: 2572096641153217986}
   - component: {fileID: 2429474733392899774}
   - component: {fileID: 4119102542416237348}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: NetworkPlayerBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -837,7 +890,16 @@ MonoBehaviour:
   camTarget: {fileID: 9145260013941972337}
   cam: {fileID: 5294716640837695687}
   headJoint: {fileID: 6070690290183045519}
-  sens: 0.015
+  hitbox: {fileID: 2966464340249275849}
+  yourBody: {fileID: 6746941468724998982}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  punchForce: 100
+  forceUpOffset: 10
+  punchDuration: 0
+  punchCooldown: 0.5
+  sens: 0.03
 --- !u!54 &5129771509037119637
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1057,7 +1119,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4400034026870108256}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CamPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1076,6 +1138,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: -0.6555735}
   m_LocalScale: {x: 1.5683569, y: 2.7514546, z: 1.5683569}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 55986997338208231}
   m_Father: {fileID: 7921052359580710859}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

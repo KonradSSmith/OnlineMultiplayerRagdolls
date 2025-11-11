@@ -3,6 +3,7 @@ using Fusion.Addons.Physics;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
 {
@@ -29,6 +30,15 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     [SerializeField] GameObject camTarget;
     [SerializeField] Camera cam;
     [SerializeField] ConfigurableJoint headJoint;
+    [Header("Combat")]
+    [SerializeField] GameObject hitbox;
+    [SerializeField] GameObject yourBody;
+    [SerializeField] LayerMask playerLayer;
+    [SerializeField] float punchForce;
+    [SerializeField] float forceUpOffset;
+    [SerializeField] float punchDuration;
+    [SerializeField] float punchCooldown;
+    bool canPunch = true;
 
     [Header("Camera Configurations")]
     [SerializeField] float sens;
@@ -87,7 +97,36 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         if (input.Buttons.WasPressed(PreviousButtons, InputButton.Jump) && grounded)
            Jump();
 
+        if (input.Buttons.WasPressed(PreviousButtons, InputButton.Punch))
+        {
+            Debug.Log("punching");
+            StartCoroutine(Punch());
+        }
+
         PreviousButtons = input.Buttons;
+    }
+
+    IEnumerator Punch()
+    {
+        if (!canPunch)
+            yield break;
+
+        canPunch = false;
+
+        Collider[] hitColliders = Physics.OverlapBox(hitbox.transform.position, hitbox.transform.localScale, hitbox.transform.rotation, playerLayer);
+        for (int i = 0; i < hitColliders.Length; i++)
+        {
+            if (hitColliders[i].CompareTag("Player") && hitColliders[i].gameObject != yourBody)
+            {
+                Vector3 forceVector = (hitColliders[i].transform.position - transform.position).normalized * punchForce;
+                forceVector.y += forceUpOffset;
+                hitColliders[i].gameObject.GetComponent<Rigidbody>().AddForce(forceVector, ForceMode.Impulse);
+            }
+        }
+        yield return new WaitForSeconds(punchCooldown);
+        canPunch = true;
+
+        yield return null;
     }
 
     private void GroundCheck()

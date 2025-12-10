@@ -57,6 +57,13 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
     Vector3 moveDirection;
     #endregion
 
+    [SerializeField] GameObject punchIndicator;
+    [SerializeField] GameObject blockIndicator;
+    bool knockedback = false;
+    public bool blocking = false;
+
+    [SerializeField] ConfigurableJoint bodyJoint;
+
     public override void FixedUpdateNetwork()
     {
         //runs on the local player
@@ -116,16 +123,33 @@ public class NetworkPlayer : NetworkBehaviour, IPlayerLeft
         Collider[] hitColliders = Physics.OverlapBox(hitbox.transform.position, hitbox.transform.localScale, hitbox.transform.rotation, playerLayer);
         for (int i = 0; i < hitColliders.Length; i++)
         {
-            if (hitColliders[i].CompareTag("Player") && hitColliders[i].gameObject != yourBody)
+            if (hitColliders[i].CompareTag("Player") && hitColliders[i].gameObject != yourBody && !hitColliders[i].GetComponent<ReferenceToPlayerMovement>().player.blocking)
             {
                 Vector3 forceVector = (hitColliders[i].transform.position - transform.position).normalized * punchForce;
                 forceVector.y += forceUpOffset;
+                StartCoroutine(hitColliders[i].gameObject.GetComponent<NetworkPlayer>().knockback());
                 hitColliders[i].gameObject.GetComponent<Rigidbody>().AddForce(forceVector, ForceMode.Impulse);
             }
         }
-        yield return new WaitForSeconds(punchCooldown);
+        punchIndicator.SetActive(true);
+        yield return new WaitForSeconds(punchCooldown/2);
+        punchIndicator.SetActive(false);
+        yield return new WaitForSeconds(punchCooldown/2);
         canPunch = true;
 
+        yield return null;
+    }
+
+    public IEnumerator knockback()
+    {
+        if (!knockedback)
+        {
+            mainJoint.rotationDriveMode = RotationDriveMode.Slerp;
+            bodyJoint.rotationDriveMode = RotationDriveMode.Slerp;
+            yield return new WaitForSeconds(1.5f);
+            mainJoint.rotationDriveMode = RotationDriveMode.XYAndZ;
+            bodyJoint.rotationDriveMode = RotationDriveMode.XYAndZ;
+        }
         yield return null;
     }
 
